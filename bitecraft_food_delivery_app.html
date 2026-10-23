@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BiteCraft - Gourmet Food Delivered Fast</title>
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#fff5f2',
+              100: '#ffe6df',
+              500: '#ff5722',
+              600: '#e64a19',
+              700: '#d84315',
+            },
+            darkbg: '#0f172a',
+            darkcard: '#1e293b',
+            darkborder: '#334155'
+          },
+          fontFamily: {
+            sans: ['Poppins', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar & Animations */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 99px;
+    }
+    .dark ::-webkit-scrollbar-thumb {
+      background: #475569;
+    }
+    
+    .glass-effect {
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.1); opacity: 0.4; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+    .pulse-animation {
+      animation: pulse-ring 2s infinite ease-in-out;
+    }
+  </style>
+</head>
+
+<body class="bg-slate-50 dark:bg-darkbg text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300 font-sans">
+
+  <!-- ================= NAVBAR ================= -->
+  <header class="sticky top-0 z-40 bg-white/90 dark:bg-darkcard/90 glass-effect border-b border-slate-200 dark:border-darkborder transition-colors">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+      
+      <!-- Logo & Location -->
+      <div class="flex items-center gap-6">
+        <a href="#" class="flex items-center gap-2 group">
+          <div class="w-10 h-10 rounded-2xl bg-brand-500 text-white flex items-center justify-center font-black text-xl shadow-lg shadow-brand-500/30 group-hover:scale-105 transition-transform">
+            🍕
+          </div>
+          <span class="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+            Bite<span class="text-brand-500">Craft</span>
+          </span>
+        </a>
+
+        <!-- Location Selector -->
+        <div class="hidden md:flex items-center gap-2 bg-slate-100 dark:bg-slate-800/80 px-3 py-1.5 rounded-full text-xs font-medium cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition" id="locationBtn">
+          <i class="fa-solid fa-location-dot text-brand-500"></i>
+          <span class="truncate max-w-[140px]" id="currentLocation">742 Evergreen Terrace</span>
+          <i class="fa-solid fa-chevron-down text-slate-400 text-[10px]"></i>
+        </div>
+      </div>
+
+      <!-- Live Search Bar -->
+      <div class="flex-1 max-w-md relative hidden sm:block">
+        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+        <input 
+          type="text" 
+          id="searchInput" 
+          placeholder="Search burgers, pizzas, ramen..." 
+          class="w-full pl-11 pr-10 py-2.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/50 transition"
+        />
+        <button id="clearSearch" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+          <i class="fa-solid fa-xmark text-xs"></i>
+        </button>
+      </div>
+
+      <!-- Actions (History, Dark/Light, Cart) -->
+      <div class="flex items-center gap-3">
+        <!-- Order History Button -->
+        <button id="historyBtn" class="p-2.5 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition relative" title="Order History">
+          <i class="fa-solid fa-receipt text-lg"></i>
+        </button>
+
+        <!-- Theme Toggle -->
+        <button id="themeToggle" class="p-2.5 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="Toggle Theme">
+          <i class="fa-solid fa-moon text-lg dark:hidden"></i>
+          <i class="fa-solid fa-sun text-lg hidden dark:block text-amber-400"></i>
+        </button>
+
+        <!-- Cart Button -->
+        <button id="cartBtn" class="bg-brand-500 hover:bg-brand-600 text-white px-4 py-2.5 rounded-full font-semibold text-sm flex items-center gap-2 shadow-lg shadow-brand-500/25 transition active:scale-95">
+          <i class="fa-solid fa-basket-shopping"></i>
+          <span class="hidden sm:inline">Cart</span>
+          <span id="cartBadge" class="bg-white text-brand-600 text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">0</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Search Bar -->
+    <div class="px-4 pb-3 sm:hidden">
+      <div class="relative">
+        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+        <input 
+          type="text" 
+          id="searchInputMobile" 
+          placeholder="Search delicious food..." 
+          class="w-full pl-9 pr-8 py-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 placeholder-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/50"
+        />
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= HERO SECTION ================= -->
+  <section class="relative bg-gradient-to-r from-orange-600 via-brand-500 to-amber-600 text-white overflow-hidden py-10 sm:py-14">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+      <div class="max-w-xl text-center md:text-left">
+        <span class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-4">
+          🚀 Free Delivery on orders over $25!
+        </span>
+        <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight mb-4">
+          Hungry? We've Got Your <span class="underline decoration-wavy decoration-amber-300">Cravings</span> Covered.
+        </h1>
+        <p class="text-orange-100 text-sm sm:text-base mb-6">
+          Handcrafted meals from top local chefs delivered hot and fresh to your doorstep in minutes.
+        </p>
+        
+        <!-- Promo Banner Code -->
+        <div class="inline-flex items-center gap-3 bg-slate-900/40 backdrop-blur-md p-2 pl-4 rounded-2xl border border-white/20 text-xs sm:text-sm">
+          <span>Use code <strong class="text-amber-300 font-mono">TASTY20</strong> for 20% OFF</span>
+          <button onclick="copyPromo('TASTY20')" class="bg-white text-slate-900 px-3 py-1.5 rounded-xl font-semibold hover:bg-amber-300 transition text-xs">
+            Copy Code
+          </button>
+        </div>
+      </div>
+
+      <!-- Hero Visual -->
+      <div class="relative w-64 h-64 sm:w-80 sm:h-80 flex items-center justify-center">
+        <div class="absolute inset-0 bg-white/10 rounded-full blur-2xl animate-pulse"></div>
+        <img 
+          src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80" 
+          alt="Delicious Food Spread" 
+          class="w-full h-full object-cover rounded-3xl shadow-2xl rotate-3 border-4 border-white/20 transform hover:rotate-0 transition-transform duration-500"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= MAIN CONTENT ================= -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+    
+    <!-- Category Filter Bar -->
+    <section class="mb-8">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">Categories</h2>
+        <span class="text-xs text-slate-500 dark:text-slate-400" id="itemCount">Showing all items</span>
+      </div>
+
+      <div class="flex gap-3 overflow-x-auto pb-3 pt-1 scrollbar-none" id="categoriesContainer">
+        <!-- Dynamically rendered categories -->
+      </div>
+    </section>
+
+    <!-- Filters & Sort Bar -->
+    <section class="mb-6 bg-white dark:bg-darkcard p-4 rounded-2xl border border-slate-200 dark:border-darkborder shadow-sm flex flex-wrap items-center justify-between gap-4">
+      
+      <!-- Dietary Badges Filter -->
+      <div class="flex flex-wrap items-center gap-2" id="dietaryFilters">
+        <button data-diet="all" class="diet-btn active bg-brand-500 text-white px-3 py-1.5 rounded-xl text-xs font-medium transition">All Diets</button>
+        <button data-diet="veg" class="diet-btn bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 px-3 py-1.5 rounded-xl text-xs font-medium transition flex items-center gap-1">
+          🟢 Veg Only
+        </button>
+        <button data-diet="spicy" class="diet-btn bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 px-3 py-1.5 rounded-xl text-xs font-medium transition flex items-center gap-1">
+          🌶️ Spicy
+        </button>
+        <button data-diet="bestseller" class="diet-btn bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 px-3 py-1.5 rounded-xl text-xs font-medium transition flex items-center gap-1">
+          ⭐ Best Seller
+        </button>
+      </div>
+
+      <!-- Sort Options -->
+      <div class="flex items-center gap-2 text-xs font-medium">
+        <span class="text-slate-400">Sort by:</span>
+        <select id="sortSelect" class="bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border-none rounded-xl px-3 py-1.5 focus:ring-2 focus:ring-brand-500 outline-none">
+          <option value="popular">Popularity</option>
+          <option value="rating">Highest Rated</option>
+          <option value="price-low">Price: Low to High</option>
+          <option value="price-high">Price: High to Low</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- Food Items Grid -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="foodGrid">
+      <!-- Dynamically populated food cards -->
+    </section>
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="bg-white dark:bg-darkcard border-t border-slate-200 dark:border-darkborder mt-12 py-8 transition-colors">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+      <div>
+        <div class="flex items-center justify-center md:justify-start gap-2 font-bold text-lg mb-1">
+          <span class="text-brand-500">🍕 BiteCraft</span>
+        </div>
+        <p class="text-xs text-slate-500 dark:text-slate-400">Delivering happiness, one bite at a time.</p>
+      </div>
+      <div class="flex items-center gap-6 text-slate-400 text-sm">
+        <a href="#" class="hover:text-brand-500 transition">Privacy Policy</a>
+        <a href="#" class="hover:text-brand-500 transition">Terms of Service</a>
+        <a href="#" class="hover:text-brand-500 transition">Support</a>
+      </div>
+      <p class="text-xs text-slate-400">© 2026 BiteCraft Inc. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- ================= MODALS & DRAWERS ================= -->
+
+  <!-- 1. CART DRAWER & OVERLAY -->
+  <div id="cartOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+  
+  <aside id="cartDrawer" class="fixed top-0 right-0 h-full w-full max-w-md bg-white dark:bg-darkcard z-50 shadow-2xl translate-x-full transition-transform duration-300 flex flex-col">
+    <!-- Cart Header -->
+    <div class="p-5 border-b border-slate-200 dark:border-darkborder flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-basket-shopping text-brand-500 text-xl"></i>
+        <h2 class="text-lg font-bold text-slate-900 dark:text-white">Your Cart</h2>
+      </div>
+      <button id="closeCartBtn" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white transition">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Cart Body / Items -->
+    <div class="flex-1 overflow-y-auto p-5 space-y-4" id="cartItemsContainer">
+      <!-- Items loaded here dynamically -->
+    </div>
+
+    <!-- Cart Footer (Calculations & Checkout) -->
+    <div class="p-5 border-t border-slate-200 dark:border-darkborder bg-slate-50 dark:bg-slate-900/50 space-y-3">
+      
+      <!-- Promo Code Section -->
+      <div class="flex gap-2">
+        <input 
+          type="text" 
+          id="couponInput" 
+          placeholder="Promo code (e.g. TASTY20)" 
+          class="flex-1 px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-darkborder bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500 uppercase"
+        />
+        <button id="applyCouponBtn" class="bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 text-white px-4 py-2 rounded-xl text-xs font-semibold transition">
+          Apply
+        </button>
+      </div>
+
+      <!-- Tip Selector -->
+      <div>
+        <label class="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 block">Driver Tip</label>
+        <div class="grid grid-cols-4 gap-2 text-xs">
+          <button data-tip="0" class="tip-btn py-1.5 rounded-lg border border-slate-200 dark:border-darkborder bg-white dark:bg-slate-800 font-medium active">None</button>
+          <button data-tip="10" class="tip-btn py-1.5 rounded-lg border border-slate-200 dark:border-darkborder bg-white dark:bg-slate-800 font-medium">10%</button>
+          <button data-tip="15" class="tip-btn py-1.5 rounded-lg border border-slate-200 dark:border-darkborder bg-white dark:bg-slate-800 font-medium">15%</button>
+          <button data-tip="20" class="tip-btn py-1.5 rounded-lg border border-slate-200 dark:border-darkborder bg-white dark:bg-slate-800 font-medium">20%</button>
+        </div>
+      </div>
+
+      <!-- Cost Breakdown -->
+      <div class="text-xs space-y-1.5 pt-2 text-slate-600 dark:text-slate-400">
+        <div class="flex justify-between">
+          <span>Subtotal</span>
+          <span id="summarySubtotal" class="font-medium">$0.00</span>
+        </div>
+        <div class="flex justify-between text-emerald-600 dark:text-emerald-400 hidden" id="discountRow">
+          <span>Discount (20%)</span>
+          <span id="summaryDiscount">-$0.00</span>
+        </div>
+        <div class="flex justify-between">
+          <span>Delivery Fee</span>
+          <span id="summaryDelivery" class="font-medium">$2.99</span>
+        </div>
+        <div class="flex justify-between">
+          <span>Tax (8%)</span>
+          <span id="summaryTax" class="font-medium">$0.00</span>
+        </div>
+        <div class="flex justify-between">
+          <span>Driver Tip</span>
+          <span id="summaryTip" class="font-medium">$0.00</span>
+        </div>
+        <div class="flex justify-between text-base font-bold text-slate-900 dark:text-white pt-2 border-t border-slate-200 dark:border-darkborder">
+          <span>Total</span>
+          <span id="summaryTotal" class="text-brand-500">$0.00</span>
+        </div>
+      </div>
+
+      <!-- Checkout CTA -->
+      <button id="checkoutBtn" class="w-full bg-brand-500 hover:bg-brand-600 text-white py-3 rounded-xl font-bold text-sm shadow-lg shadow-brand-500/30 transition active:scale-98">
+        Proceed to Checkout
+      </button>
+    </div>
+  </aside>
+
+  <!-- 2. CUSTOMIZATION MODAL -->
+  <div id="customizerModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-darkcard max-w-lg w-full rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-darkborder animate-in fade-in zoom-in-95 duration-200">
+      
+      <div class="relative h-48 sm:h-56">
+        <img id="customizerImg" src="" alt="Food" class="w-full h-full object-cover" />
+        <button id="closeCustomizer" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-900/50 text-white backdrop-blur-md flex items-center justify-center hover:bg-slate-900 transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
+        <div>
+          <div class="flex justify-between items-start">
+            <h3 id="customizerTitle" class="text-xl font-bold text-slate-900 dark:text-white"></h3>
+            <span id="customizerBasePrice" class="text-lg font-bold text-brand-500"></span>
+          </div>
+          <p id="customizerDesc" class="text-xs text-slate-500 dark:text-slate-400 mt-1"></p>
+        </div>
+
+        <!-- Options: Spice Level -->
+        <div id="spiceOptionGroup" class="space-y-2">
+          <label class="text-xs font-bold uppercase tracking-wider text-slate-400">Choose Spice Level</label>
+          <div class="grid grid-cols-3 gap-2">
+            <label class="border border-slate-200 dark:border-darkborder p-2.5 rounded-xl flex items-center justify-center gap-1.5 text-xs font-medium cursor-pointer hover:border-brand-500">
+              <input type="radio" name="spice" value="Mild" checked class="accent-brand-500"/> Mild
+            </label>
+            <label class="border border-slate-200 dark:border-darkborder p-2.5 rounded-xl flex items-center justify-center gap-1.5 text-xs font-medium cursor-pointer hover:border-brand-500">
+              <input type="radio" name="spice" value="Medium" class="accent-brand-500"/> Medium 🌶️
+            </label>
+            <label class="border border-slate-200 dark:border-darkborder p-2.5 rounded-xl flex items-center justify-center gap-1.5 text-xs font-medium cursor-pointer hover:border-brand-500">
+              <input type="radio" name="spice" value="Extra Hot" class="accent-brand-500"/> Hot 🌶️🌶️
+            </label>
+          </div>
+        </div>
+
+        <!-- Options: Toppings / Addons -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold uppercase tracking-wider text-slate-400">Extra Add-ons</label>
+          <div class="space-y-2" id="addonsContainer">
+            <label class="flex items-center justify-between border border-slate-200 dark:border-darkborder p-2.5 rounded-xl text-xs font-medium cursor-pointer hover:border-brand-500">
+              <span class="flex items-center gap-2">
+                <input type="checkbox" value="Extra Cheese" data-price="1.50" class="addon-checkbox accent-brand-500"/> Extra Cheese
+              </span>
+              <span class="text-slate-400">+$1.50</span>
+            </label>
+            <label class="flex items-center justify-between border border-slate-200 dark:border-darkborder p-2.5 rounded-xl text-xs font-medium cursor-pointer hover:border-brand-500">
+              <span class="flex items-center gap-2">
+                <input type="checkbox" value="Bacon / Crispy Bits" data-price="2.00" class="addon-checkbox accent-brand-500"/> Crispy Bacon
+              </span>
+              <span class="text-slate-400">+$2.00</span>
+            </label>
+            <label class="flex items-center justify-between border border-slate-200 dark:border-darkborder p-2.5 rounded-xl text-xs font-medium cursor-pointer hover:border-brand-500">
+              <span class="flex items-center gap-2">
+                <input type="checkbox" value="Guacamole Dip" data-price="1.75" class="addon-checkbox accent-brand-500"/> Guacamole Dip
+              </span>
+              <span class="text-slate-400">+$1.75</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Special Instructions -->
+        <div>
+          <label class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">Special Instructions</label>
+          <input type="text" id="specialNotes" placeholder="e.g. No onions, sauce on the side..." class="w-full text-xs p-3 rounded-xl border border-slate-200 dark:border-darkborder bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500"/>
+        </div>
+      </div>
+
+      <div class="p-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-darkborder flex items-center justify-between gap-4">
+        <div>
+          <span class="text-xs text-slate-400 block">Calculated Price</span>
+          <span id="customizerFinalPrice" class="text-xl font-black text-slate-900 dark:text-white">$0.00</span>
+        </div>
+        <button id="addCustomizedToCartBtn" class="bg-brand-500 hover:bg-brand-600 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-md shadow-brand-500/30 transition">
+          Add to Order
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. CHECKOUT & PAYMENT MODAL -->
+  <div id="checkoutModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-darkcard max-w-xl w-full rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-darkborder animate-in fade-in zoom-in-95 duration-200">
+      
+      <!-- Checkout Header -->
+      <div class="p-5 border-b border-slate-200 dark:border-darkborder flex items-center justify-between">
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Complete Your Order</h3>
+        <button id="closeCheckout" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Checkout Form Content -->
+      <form id="checkoutForm" class="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+        <!-- Delivery Address -->
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">1. Delivery Address</h4>
+          <div class="grid grid-cols-2 gap-3">
+            <input type="text" required placeholder="Full Name" class="col-span-2 text-xs p-3 rounded-xl border border-slate-200 dark:border-darkborder bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500"/>
+            <input type="text" required placeholder="Street Address" class="col-span-2 text-xs p-3 rounded-xl border border-slate-200 dark:border-darkborder bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500"/>
+            <input type="text" required placeholder="Apt/Suite #" class="text-xs p-3 rounded-xl border border-slate-200 dark:border-darkborder bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500"/>
+            <input type="tel" required placeholder="Phone Number" class="text-xs p-3 rounded-xl border border-slate-200 dark:border-darkborder bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500"/>
+          </div>
+        </div>
+
+        <!-- Payment Option -->
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">2. Payment Method</h4>
+          <div class="grid grid-cols-3 gap-2">
+            <label class="border-2 border-brand-500 bg-brand-50/20 dark:bg-brand-500/10 p-3 rounded-xl flex flex-col items-center justify-center text-xs font-semibold cursor-pointer">
+              <input type="radio" name="paymentMethod" value="Card" checked class="hidden"/>
+              <i class="fa-solid fa-credit-card text-lg text-brand-500 mb-1"></i>
+              <span>Credit Card</span>
+            </label>
+            <label class="border border-slate-200 dark:border-darkborder p-3 rounded-xl flex flex-col items-center justify-center text-xs font-semibold cursor-pointer hover:border-brand-500">
+              <input type="radio" name="paymentMethod" value="ApplePay" class="hidden"/>
+              <i class="fa-brands fa-apple text-lg mb-1"></i>
+              <span>Apple Pay</span>
+            </label>
+            <label class="border border-slate-200 dark:border-darkborder p-3 rounded-xl flex flex-col items-center justify-center text-xs font-semibold cursor-pointer hover:border-brand-500">
+              <input type="radio" name="paymentMethod" value="COD" class="hidden"/>
+              <i class="fa-solid fa-money-bill-wave text-lg mb-1 text-emerald-500"></i>
+              <span>Cash on Del.</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Card Info (Conditional Display) -->
+        <div id="cardFields" class="space-y-3 pt-1">
+          <input type="text" placeholder="Card Number (e.g. 4532 ....)" class="w-full text-xs p-3 rounded-xl border border-slate-200 dark:border-darkborder bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500"/>
+          <div class="grid grid-cols-2 gap-3">
+            <input type="text" placeholder="MM/YY" class="text-xs p-3 rounded-xl border border-slate-200 dark:border-darkborder bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500"/>
+            <input type="text" placeholder="CVC" class="text-xs p-3 rounded-xl border border-slate-200 dark:border-darkborder bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500"/>
+          </div>
+        </div>
+
+        <!-- Summary Line in Checkout -->
+        <div class="pt-3 border-t border-slate-200 dark:border-darkborder flex justify-between items-center text-sm font-bold">
+          <span>Amount to Pay:</span>
+          <span id="checkoutTotalAmount" class="text-lg text-brand-500">$0.00</span>
+        </div>
+
+        <button type="submit" class="w-full bg-brand-500 hover:bg-brand-600 text-white py-3.5 rounded-xl font-bold text-sm shadow-lg shadow-brand-500/30 transition">
+          Pay & Place Order 🚀
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. LIVE ORDER TRACKING MODAL -->
+  <div id="trackerModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-darkcard max-w-md w-full rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-darkborder p-6 text-center space-y-6 animate-in fade-in zoom-in-95 duration-200">
+      
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-brand-500/10 text-brand-500 text-2xl pulse-animation">
+        <i class="fa-solid fa-motorcycle"></i>
+      </div>
+
+      <div>
+        <h3 class="text-xl font-extrabold text-slate-900 dark:text-white">Order on the Way!</h3>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Order #BC-<span id="trackingOrderId">8921</span> • Estimated time: <strong class="text-brand-500" id="etaTime">25 mins</strong></p>
+      </div>
+
+      <!-- Live Step Progress Bar -->
+      <div class="space-y-4 text-left">
+        <div class="relative flex items-center justify-between text-xs font-semibold">
+          <div class="step-node active flex flex-col items-center gap-1 z-10">
+            <span class="w-8 h-8 rounded-full bg-brand-500 text-white flex items-center justify-center shadow-md">✓</span>
+            <span class="text-[10px]">Received</span>
+          </div>
+          <div class="step-node flex flex-col items-center gap-1 z-10" id="step2">
+            <span class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-500 flex items-center justify-center">🍳</span>
+            <span class="text-[10px]">Cooking</span>
+          </div>
+          <div class="step-node flex flex-col items-center gap-1 z-10" id="step3">
+            <span class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-500 flex items-center justify-center">🛵</span>
+            <span class="text-[10px]">On Way</span>
+          </div>
+          <div class="step-node flex flex-col items-center gap-1 z-10" id="step4">
+            <span class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-500 flex items-center justify-center">🏠</span>
+            <span class="text-[10px]">Arrived</span>
+          </div>
+
+          <!-- Progress track background -->
+          <div class="absolute top-4 left-4 right-4 h-1 bg-slate-200 dark:bg-slate-700 -z-0">
+            <div id="trackerProgressBar" class="h-full bg-brand-500 w-1/4 transition-all duration-700"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Map Graphic Placeholder -->
+      <div class="h-32 bg-slate-100 dark:bg-slate-800 rounded-2xl flex items-center justify-center text-slate-400 text-xs border border-dashed border-slate-300 dark:border-slate-700 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#ff5722_1px,transparent_1px)] [background-size:16px_16px]"></div>
+        <span class="relative z-10 font-medium">📍 Live GPS Tracking Simulation</span>
+      </div>
+
+      <button id="closeTracker" class="w-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 py-2.5 rounded-xl text-xs font-bold transition">
+        Dismiss & Back to Menu
+      </button>
+    </div>
+  </div>
+
+  <!-- 5. ORDER HISTORY MODAL -->
+  <div id="historyModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-darkcard max-w-lg w-full rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-darkborder animate-in fade-in zoom-in-95 duration-200">
+      <div class="p-5 border-b border-slate-200 dark:border-darkborder flex items-center justify-between">
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Past Orders</h3>
+        <button id="closeHistory" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="p-5 max-h-[60vh] overflow-y-auto space-y-4" id="historyItemsContainer">
+        <!-- Past orders populated here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= TOAST NOTIFICATION CONTAINER ================= -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+
+  <!-- ================= JAVASCRIPT LOGIC ================= -->
+  <script>
+    // --- CATALOG DATA ---
+    const catalog = [
+      {
+        id: 1,
+        title: "Classic Cheeseburger",
+        category: "Burgers",
+        price: 8.99,
+        rating: 4.8,
+        reviews: 340,
+        isVeg: false,
+        isSpicy: false,
+        isBestSeller: true,
+        desc: "Juicy beef patty with melted cheddar, crisp lettuce, tomato, and secret sauce.",
+        img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: 2,
+        title: "Smoky BBQ Bacon Burger",
+        category: "Burgers",
+        price: 11.49,
+        rating: 4.9,
+        reviews: 512,
+        isVeg: false,
+        isSpicy: true,
+        isBestSeller: true,
+        desc: "Double patty topped with crispy bacon strips, smoked gouda, and BBQ drizzle.",
+        img: "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: 3,
+        title: "Artisanal Margherita Pizza",
+        category: "Pizza",
+        price: 13.99,
+        rating: 4.7,
+        reviews: 210,
+        isVeg: true,
+        isSpicy: false,
+        isBestSeller: false,
+        desc: "Hand-stretched sourdough crust, San Marzano tomato sauce, fresh mozzarella, and basil.",
+        img: "https://images.unsplash.com/photo-1604382355076-af4b0eb60143?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: 4,
+        title: "Hot Honey Pepperoni",
+        category: "Pizza",
+        price: 15.50,
+        rating: 4.9,
+        reviews: 620,
+        isVeg: false,
+        isSpicy: true,
+        isBestSeller: true,
+        desc: "Loaded with double spicy pepperoni, mozzarella, and chili-infused wildflower honey.",
+        img: "https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: 5,
+        title: "Tonkotsu Pork Ramen",
+        category: "Asian",
+        price: 14.25,
+        rating: 4.8,
+        reviews: 180,
+        isVeg: false,
+        isSpicy: false,
+        isBestSeller: true,
+        desc: "Rich pork bone broth, tender chashu pork, scallions, bamboo shoots, and soft-boiled egg.",
+        img: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: 6,
+        title: "Salmon Nigiri & Roll Combo",
+        category: "Asian",
+        price: 16.50,
+        rating: 4.6,
+        reviews: 95,
+        isVeg: false,
+        isSpicy: false,
+        isBestSeller: false,
+        desc: "Fresh Atlantic salmon nigiri paired with spicy salmon avocado dragon rolls.",
+        img: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: 7,
+        title: "Street Style Carne Asada Tacos",
+        category: "Tacos",
+        price: 10.99,
+        rating: 4.7,
+        reviews: 280,
+        isVeg: false,
+        isSpicy: true,
+        isBestSeller: false,
+        desc: "Three soft corn tortillas with grilled marinated steak, cilantro, diced onions, and salsa verde.",
+        img: "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: 8,
+        title: "Avocado & Baja Fish Tacos",
+        category: "Tacos",
+        price: 11.99,
+        rating: 4.8,
+        reviews: 140,
+        isVeg: false,
+        isSpicy: true,
+        isBestSeller: true,
+        desc: "Crispy battered cod, chipotle lime slaw, pico de gallo, and fresh sliced avocado.",
+        img: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: 9,
+        title: "Creamy Truffle Alfredo Pasta",
+        category: "Pasta",
+        price: 14.99,
+        rating: 4.5,
+        reviews: 110,
+        isVeg: true,
+        isSpicy: false,
+        isBestSeller: false,
+        desc: "Fettuccine tossed in a velvet black truffle cream sauce with aged parmesan shavings.",
+        img: "https://images.unsplash.com/photo-1621996346565-e3d5d6281358?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: 10,
+        title: "Mediterranean Grain Bowl",
+        category: "Salads",
+        price: 9.99,
+        rating: 4.6,
+        reviews: 85,
+        isVeg: true,
+        isSpicy: false,
+        isBestSeller: false,
+        desc: "Quinoa, cucumbers, kalamata olives, cherry tomatoes, creamy feta, and lemon herb dressing.",
+        img: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: 11,
+        title: "Warm Molten Lava Cake",
+        category: "Desserts",
+        price: 6.99,
+        rating: 4.9,
+        reviews: 430,
+        isVeg: true,
+        isSpicy: false,
+        isBestSeller: true,
+        desc: "Rich chocolate cake with a molten center served with a scoop of vanilla bean ice cream.",
+        img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: 12,
+        title: "Iced Salted Caramel Macchiato",
+        category: "Drinks",
+        price: 4.99,
+        rating: 4.7,
+        reviews: 290,
+        isVeg: true,
+        isSpicy: false,
+        isBestSeller: false,
+        desc: "Espresso layered with steamed oat milk, vanilla syrup, and sea salt caramel drizzle.",
+        img: "https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=600&q=80"
+      }
+    ];
+
+    const categories = [
+      { id: "all", name: "All", icon: "🍽️" },
+      { id: "Burgers", name: "Burgers", icon: "🍔" },
+      { id: "Pizza", name: "Pizza", icon: "🍕" },
+      { id: "Asian", name: "Asian", icon: "🍜" },
+      { id: "Tacos", name: "Tacos", icon: "🌮" },
+      { id: "Pasta", name: "Pasta", icon: "🍝" },
+      { id: "Salads", name: "Salads", icon: "🥗" },
+      { id: "Desserts", name: "Desserts", icon: "🍰" },
+      { id: "Drinks", name: "Drinks", icon: "🥤" }
+    ];
+
+    // --- STATE MANAGEMENT ---
+    let cart = [];
+    let activeCategory = 'all';
+    let activeDietFilter = 'all';
+    let searchQuery = '';
+    let sortBy = 'popular';
+    let selectedTipPercent = 0;
+    let appliedDiscount = 0; // e.g. 0.20
+    let pendingCustomizationItem = null;
+    let orderHistory = [
+      {
+        id: "BC-7231",
+        date: "Yesterday, 7:30 PM",
+        total: 28.45,
+        items: ["Classic Cheeseburger", "Hot Honey Pepperoni"]
+      }
+    ];
+
+    // --- DOM ELEMENTS ---
+    const foodGrid = document.getElementById('foodGrid');
+    const categoriesContainer = document.getElementById('categoriesContainer');
+    const searchInput = document.getElementById('searchInput');
+    const searchInputMobile = document.getElementById('searchInputMobile');
+    const clearSearch = document.getElementById('clearSearch');
+    const cartBtn = document.getElementById('cartBtn');
+    const cartDrawer = document.getElementById('cartDrawer');
+    const cartOverlay = document.getElementById('cartOverlay');
+    const closeCartBtn = document.getElementById('closeCartBtn');
+    const cartBadge = document.getElementById('cartBadge');
+    const cartItemsContainer = document.getElementById('cartItemsContainer');
+    
+    const themeToggle = document.getElementById('themeToggle');
+    const sortSelect = document.getElementById('sortSelect');
+    const customizerModal = document.getElementById('customizerModal');
+    const checkoutModal = document.getElementById('checkoutModal');
+    const trackerModal = document.getElementById('trackerModal');
+    const historyModal = document.getElementById('historyModal');
+
+    // --- INITIALIZATION ---
+    window.addEventListener('DOMContentLoaded', () => {
+      renderCategories();
+      renderMenu();
+      setupEventListeners();
+      updateCartUI();
+    });
+
+    // --- RENDER CATEGORIES ---
+    function renderCategories() {
+      categoriesContainer.innerHTML = categories.map(cat => `
+        <button 
+          data-category="${cat.id}"
+          class="cat-pill flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-semibold whitespace-nowrap border transition-all ${
+            activeCategory === cat.id 
+              ? 'bg-brand-500 text-white border-brand-500 shadow-md shadow-brand-500/20' 
+              : 'bg-white dark:bg-darkcard text-slate-600 dark:text-slate-300 border-slate-200 dark:border-darkborder hover:border-brand-500'
+          }"
+        >
+          <span>${cat.icon}</span>
+          <span>${cat.name}</span>
+        </button>
+      `).join('');
+
+      // Category click handler
+      document.querySelectorAll('.cat-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+          activeCategory = btn.dataset.category;
+          renderCategories();
+          renderMenu();
+        });
+      });
+    }
+
+    // --- RENDER MENU & FILTERS ---
+    function renderMenu() {
+      let items = catalog.filter(item => {
+        const matchesCategory = activeCategory === 'all' || item.category === activeCategory;
+        const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                              item.desc.toLowerCase().includes(searchQuery.toLowerCase());
+        
+        let matchesDiet = true;
+        if (activeDietFilter === 'veg') matchesDiet = item.isVeg;
+        if (activeDietFilter === 'spicy') matchesDiet = item.isSpicy;
+        if (activeDietFilter === 'bestseller') matchesDiet = item.isBestSeller;
+
+        return matchesCategory && matchesSearch && matchesDiet;
+      });
+
+      // Sorting Logic
+      if (sortBy === 'rating') items.sort((a, b) => b.rating - a.rating);
+      if (sortBy === 'price-low') items.sort((a, b) => a.price - b.price);
+      if (sortBy === 'price-high') items.sort((a, b) => b.price - a.price);
+
+      document.getElementById('itemCount').textContent = `Showing ${items.length} items`;
+
+      if (items.length === 0) {
+        foodGrid.innerHTML = `
+          <div class="col-span-full py-12 text-center">
+            <div class="text-4xl mb-3">🔍</div>
+            <h3 class="font-bold text-slate-700 dark:text-slate-300">No dishes match your criteria</h3>
+            <p class="text-xs text-slate-400 mt-1">Try resetting filters or searching for something else.</p>
+          </div>
+        `;
+        return;
+      }
+
+      foodGrid.innerHTML = items.map(item => `
+        <article class="bg-white dark:bg-darkcard rounded-3xl border border-slate-200 dark:border-darkborder overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group">
+          
+          <!-- Image Header -->
+          <div class="relative h-44 overflow-hidden">
+            <img 
+              src="${item.img}" 
+              alt="${item.title}" 
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              loading="lazy"
+            />
+            
+            <!-- Badges overlay -->
+            <div class="absolute top-3 left-3 flex flex-wrap gap-1.5">
+              ${item.isVeg ? '<span class="bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow">VEG</span>' : ''}
+              ${item.isSpicy ? '<span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow">🌶️ SPICY</span>' : ''}
+              ${item.isBestSeller ? '<span class="bg-amber-400 text-slate-900 text-[10px] font-extrabold px-2 py-0.5 rounded-md shadow">⭐ BESTSELLER</span>' : ''}
+            </div>
+
+            <div class="absolute bottom-2 right-2 bg-slate-900/70 backdrop-blur-md text-white text-xs px-2 py-1 rounded-lg font-bold flex items-center gap-1">
+              <i class="fa-solid fa-star text-amber-400 text-[10px]"></i>
+              <span>${item.rating}</span>
+              <span class="text-slate-400 font-normal">(${item.reviews})</span>
+            </div>
+          </div>
+
+          <!-- Content Body -->
+          <div class="p-5 flex-1 flex flex-col justify-between">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-brand-500">${item.category}</span>
+              <h3 class="font-bold text-base text-slate-900 dark:text-white mt-0.5 line-clamp-1">${item.title}</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1.5 line-clamp-2 leading-relaxed">${item.desc}</p>
+            </div>
+
+            <div class="flex items-center justify-between pt-4 mt-2 border-t border-slate-100 dark:border-darkborder">
+              <span class="text-lg font-black text-slate-900 dark:text-white">$${item.price.toFixed(2)}</span>
+              
+              <button 
+                onclick="openCustomizer(${item.id})"
+                class="bg-brand-500 hover:bg-brand-600 text-white px-3.5 py-1.5 rounded-xl font-bold text-xs shadow-md shadow-brand-500/20 active:scale-95 transition"
+              >
+                + Add
+              </button>
+            </div>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    // --- CUSTOMIZER MODAL LOGIC ---
+    window.openCustomizer = function(id) {
+      const item = catalog.find(i => i.id === id);
+      if (!item) return;
+
+      pendingCustomizationItem = { ...item };
+      
+      document.getElementById('customizerImg').src = item.img;
+      document.getElementById('customizerTitle').textContent = item.title;
+      document.getElementById('customizerDesc').textContent = item.desc;
+      document.getElementById('customizerBasePrice').textContent = `$${item.price.toFixed(2)}`;
+
+      // Reset checkboxes
+      document.querySelectorAll('.addon-checkbox').forEach(cb => cb.checked = false);
+      document.getElementById('specialNotes').value = '';
+
+      calculateCustomizerPrice();
+      customizerModal.classList.remove('hidden');
+    };
+
+    function calculateCustomizerPrice() {
+      if (!pendingCustomizationItem) return;
+
+      let extra = 0;
+      document.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
+        extra += parseFloat(cb.dataset.price);
+      });
+
+      const total = pendingCustomizationItem.price + extra;
+      document.getElementById('customizerFinalPrice').textContent = `$${total.toFixed(2)}`;
+    }
+
+    // --- CART ACTIONS & CALCULATIONS ---
+    function addToCart(customizedItem) {
+      const existingIndex = cart.findIndex(c => 
+        c.id === customizedItem.id && 
+        c.spice === customizedItem.spice && 
+        JSON.stringify(c.addons) === JSON.stringify(customizedItem.addons)
+      );
+
+      if (existingIndex > -1) {
+        cart[existingIndex].quantity += 1;
+      } else {
+        cart.push(customizedItem);
+      }
+
+      updateCartUI();
+      showToast(`Added ${customizedItem.title} to cart! 🍔`);
+    }
+
+    window.updateQty = function(index, delta) {
+      if (cart[index]) {
+        cart[index].quantity += delta;
+        if (cart[index].quantity <= 0) {
+          cart.splice(index, 1);
+        }
+      }
+      updateCartUI();
+    };
+
+    function updateCartUI() {
+      // Total itemCount
+      const count = cart.reduce((acc, i) => acc + i.quantity, 0);
+      cartBadge.textContent = count;
+
+      if (cart.length === 0) {
+        cartItemsContainer.innerHTML = `
+          <div class="text-center py-12 text-slate-400">
+            <i class="fa-solid fa-basket-shopping text-4xl mb-2 opacity-50"></i>
+            <p class="text-sm font-semibold">Your cart is empty</p>
+            <p class="text-xs">Add some items from the menu to start!</p>
+          </div>
+        `;
+      } else {
+        cartItemsContainer.innerHTML = cart.map((item, index) => {
+          const addonsText = item.addons.length ? ` (+${item.addons.join(', ')})` : '';
+          return `
+            <div class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-darkborder">
+              <img src="${item.img}" class="w-14 h-14 object-cover rounded-xl"/>
+              <div class="flex-1 min-w-0">
+                <h4 class="font-bold text-xs text-slate-800 dark:text-slate-100 truncate">${item.title}</h4>
+                <p class="text-[10px] text-slate-400 truncate">${item.spice}${addonsText}</p>
+                <span class="text-xs font-black text-brand-500">$${(item.unitTotal * item.quantity).toFixed(2)}</span>
+              </div>
+              <div class="flex items-center gap-2 bg-white dark:bg-slate-700 px-2 py-1 rounded-xl border border-slate-200 dark:border-darkborder">
+                <button onclick="updateQty(${index}, -1)" class="text-xs font-bold w-5 h-5 text-slate-500 hover:text-brand-500">-</button>
+                <span class="text-xs font-bold">${item.quantity}</span>
+                <button onclick="updateQty(${index}, 1)" class="text-xs font-bold w-5 h-5 text-slate-500 hover:text-brand-500">+</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Calculations
+      const subtotal = cart.reduce((acc, i) => acc + (i.unitTotal * i.quantity), 0);
+      const discountVal = subtotal * appliedDiscount;
+      const deliveryFee = subtotal > 0 ? 2.99 : 0;
+      const tax = (subtotal - discountVal) * 0.08;
+      const tipVal = (subtotal - discountVal) * (selectedTipPercent / 100);
+      const grandTotal = Math.max(0, subtotal - discountVal + deliveryFee + tax + tipVal);
+
+      document.getElementById('summarySubtotal').textContent = `$${subtotal.toFixed(2)}`;
+      document.getElementById('summaryDiscount').textContent = `-$${discountVal.toFixed(2)}`;
+      document.getElementById('summaryDelivery').textContent = `$${deliveryFee.toFixed(2)}`;
+      document.getElementById('summaryTax').textContent = `$${tax.toFixed(2)}`;
+      document.getElementById('summaryTip').textContent = `$${tipVal.toFixed(2)}`;
+      document.getElementById('summaryTotal').textContent = `$${grandTotal.toFixed(2)}`;
+      document.getElementById('checkoutTotalAmount').textContent = `$${grandTotal.toFixed(2)}`;
+
+      const discountRow = document.getElementById('discountRow');
+      if (appliedDiscount > 0) discountRow.classList.remove('hidden');
+      else discountRow.classList.add('hidden');
+    }
+
+    // --- EVENT LISTENERS setup ---
+    function setupEventListeners() {
+      // Search
+      const handleSearch = (e) => {
+        searchQuery = e.target.value;
+        if (searchQuery.length > 0) clearSearch.classList.remove('hidden');
+        else clearSearch.classList.add('hidden');
+        renderMenu();
+      };
+      searchInput.addEventListener('input', handleSearch);
+      searchInputMobile.addEventListener('input', handleSearch);
+      clearSearch.addEventListener('click', () => {
+        searchInput.value = '';
+        searchInputMobile.value = '';
+        searchQuery = '';
+        clearSearch.classList.add('hidden');
+        renderMenu();
+      });
+
+      // Cart Drawer Toggle
+      const toggleCart = (open) => {
+        if (open) {
+          cartDrawer.classList.remove('translate-x-full');
+          cartOverlay.classList.remove('opacity-0', 'pointer-events-none');
+        } else {
+          cartDrawer.classList.add('translate-x-full');
+          cartOverlay.classList.add('opacity-0', 'pointer-events-none');
+        }
+      };
+      cartBtn.addEventListener('click', () => toggleCart(true));
+      closeCartBtn.addEventListener('click', () => toggleCart(false));
+      cartOverlay.addEventListener('click', () => toggleCart(false));
+
+      // Theme Switcher
+      themeToggle.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        showToast("Theme switched! 🌓");
+      });
+
+      // Dietary Filters
+      document.querySelectorAll('.diet-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.diet-btn').forEach(b => {
+            b.classList.remove('bg-brand-500', 'text-white', 'active');
+            b.classList.add('bg-slate-100', 'dark:bg-slate-800', 'text-slate-600', 'dark:text-slate-300');
+          });
+          btn.classList.add('bg-brand-500', 'text-white', 'active');
+          btn.classList.remove('bg-slate-100', 'dark:bg-slate-800', 'text-slate-600', 'dark:text-slate-300');
+          activeDietFilter = btn.dataset.diet;
+          renderMenu();
+        });
+      });
+
+      // Sort Select
+      sortSelect.addEventListener('change', (e) => {
+        sortBy = e.target.value;
+        renderMenu();
+      });
+
+      // Customizer Addon Click recalculation
+      document.querySelectorAll('.addon-checkbox').forEach(cb => {
+        cb.addEventListener('change', calculateCustomizerPrice);
+      });
+
+      // Confirm Customization
+      document.getElementById('addCustomizedToCartBtn').addEventListener('click', () => {
+        if (!pendingCustomizationItem) return;
+
+        const spice = document.querySelector('input[name="spice"]:checked').value;
+        const addons = [];
+        let extra = 0;
+
+        document.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
+          addons.push(cb.value);
+          extra += parseFloat(cb.dataset.price);
+        });
+
+        const finalItem = {
+          ...pendingCustomizationItem,
+          spice,
+          addons,
+          unitTotal: pendingCustomizationItem.price + extra,
+          quantity: 1
+        };
+
+        addToCart(finalItem);
+        customizerModal.classList.add('hidden');
+      });
+
+      document.getElementById('closeCustomizer').addEventListener('click', () => {
+        customizerModal.classList.add('hidden');
+      });
+
+      // Coupon Application
+      document.getElementById('applyCouponBtn').addEventListener('click', () => {
+        const code = document.getElementById('couponInput').value.trim().toUpperCase();
+        if (code === 'TASTY20') {
+          appliedDiscount = 0.20;
+          showToast("Coupon TASTY20 Applied! 20% OFF 🎉");
+          updateCartUI();
+        } else {
+          showToast("Invalid Promo Code ❌");
+        }
+      });
+
+      // Tip Selectors
+      document.querySelectorAll('.tip-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.tip-btn').forEach(b => b.classList.remove('bg-brand-500', 'text-white'));
+          btn.classList.add('bg-brand-500', 'text-white');
+          selectedTipPercent = parseFloat(btn.dataset.tip);
+          updateCartUI();
+        });
+      });
+
+      // Checkout Trigger
+      document.getElementById('checkoutBtn').addEventListener('click', () => {
+        if (cart.length === 0) {
+          showToast("Your cart is empty! 🛒");
+          return;
+        }
+        toggleCart(false);
+        checkoutModal.classList.remove('hidden');
+      });
+
+      document.getElementById('closeCheckout').addEventListener('click', () => {
+        checkoutModal.classList.add('hidden');
+      });
+
+      // Place Order Submission
+      document.getElementById('checkoutForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        checkoutModal.classList.add('hidden');
+
+        // Generate Order
+        const orderId = Math.floor(1000 + Math.random() * 9000);
+        orderHistory.unshift({
+          id: `BC-${orderId}`,
+          date: "Just Now",
+          total: parseFloat(document.getElementById('checkoutTotalAmount').textContent.replace('$', '')),
+          items: cart.map(i => i.title)
+        });
+
+        cart = [];
+        updateCartUI();
+        triggerLiveTracker(orderId);
+      });
+
+      // Order Tracker Modal dismiss
+      document.getElementById('closeTracker').addEventListener('click', () => {
+        trackerModal.classList.add('hidden');
+      });
+
+      // Order History Modal
+      document.getElementById('historyBtn').addEventListener('click', renderHistory);
+      document.getElementById('closeHistory').addEventListener('click', () => {
+        historyModal.classList.add('hidden');
+      });
+    }
+
+    // --- LIVE TRACKER SIMULATION ---
+    function triggerLiveTracker(orderId) {
+      document.getElementById('trackingOrderId').textContent = orderId;
+      trackerModal.classList.remove('hidden');
+
+      const progressBar = document.getElementById('trackerProgressBar');
+      const step2 = document.getElementById('step2').querySelector('span');
+      const step3 = document.getElementById('step3').querySelector('span');
+
+      progressBar.style.width = '25%';
+
+      // Simulate step progression
+      setTimeout(() => {
+        progressBar.style.width = '50%';
+        step2.classList.replace('bg-slate-200', 'bg-brand-500');
+        step2.classList.replace('text-slate-500', 'text-white');
+        showToast("Kitchen started preparing your food! 🍳");
+      }, 3000);
+
+      setTimeout(() => {
+        progressBar.style.width = '75%';
+        step3.classList.replace('bg-slate-200', 'bg-brand-500');
+        step3.classList.replace('text-slate-500', 'text-white');
+        showToast("Driver picked up your order! 🛵");
+      }, 7000);
+    }
+
+    // --- ORDER HISTORY RENDER ---
+    function renderHistory() {
+      const container = document.getElementById('historyItemsContainer');
+      if (orderHistory.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">No past orders found.</p>`;
+      } else {
+        container.innerHTML = orderHistory.map(order => `
+          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-darkborder space-y-2">
+            <div class="flex justify-between items-center text-xs font-bold">
+              <span>Order #${order.id}</span>
+              <span class="text-emerald-500">Delivered ✓</span>
+            </div>
+            <p class="text-[11px] text-slate-400">${order.date}</p>
+            <div class="text-xs text-slate-600 dark:text-slate-300">${order.items.join(', ')}</div>
+            <div class="flex justify-between items-center pt-2 border-t border-slate-200 dark:border-darkborder">
+              <span class="font-black text-sm">$${order.total.toFixed(2)}</span>
+              <button onclick="reorder('${order.id}')" class="bg-brand-500 hover:bg-brand-600 text-white px-3 py-1 rounded-xl text-xs font-semibold">
+                Reorder
+              </button>
+            </div>
+          </div>
+        `).join('');
+      }
+      historyModal.classList.remove('hidden');
+    }
+
+    window.reorder = function(orderId) {
+      historyModal.classList.add('hidden');
+      addToCart({
+        ...catalog[0],
+        spice: "Mild",
+        addons: [],
+        unitTotal: catalog[0].price,
+        quantity: 1
+      });
+      showToast("Items added from past order! 🔄");
+    };
+
+    // --- HELPER UTILITIES ---
+    window.copyPromo = function(code) {
+      document.execCommand('copy');
+      showToast(`Promo code ${code} copied! 📋`);
+    };
+
+    function showToast(message) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `bg-slate-900/90 text-white dark:bg-white dark:text-slate-900 px-4 py-3 rounded-2xl shadow-2xl text-xs font-bold flex items-center gap-2 animate-in slide-in-from-bottom-5 duration-300 pointer-events-auto`;
+      toast.innerHTML = `<span>${message}</span>`;
+
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'transition-opacity');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
